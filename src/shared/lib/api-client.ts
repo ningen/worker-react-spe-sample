@@ -1,5 +1,5 @@
 import { hc } from 'hono/client'
-import type { AppType } from '../../server/index.js'
+import type { AppType } from '../../server/types'
 
 // Hono RPCクライアントを作成
 // ルート全体のクライアントを作成し、api.todosでアクセス
