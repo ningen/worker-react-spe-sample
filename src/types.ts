@@ -1,9 +1,6 @@
 import type { Auth } from './lib/auth'
 
-export type Bindings = {
-  DB: D1Database
-  KV: KVNamespace
-}
+export type Bindings = CloudflareBindings
 
 export type Variables = {
   auth: Auth
