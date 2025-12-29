@@ -1,8 +1,10 @@
 import { Hono } from 'hono'
+import { zValidator } from '@hono/zod-validator'
 import { drizzle } from 'drizzle-orm/d1'
 import { eq, and } from 'drizzle-orm'
 import * as schema from '../db/schema'
 import type { Bindings, Variables } from '../types'
+import { createTodoSchema, updateTodoSchema } from '../lib/schemas'
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
@@ -16,21 +18,17 @@ app.get('/', async (c) => {
   const db = drizzle(c.env.DB, { schema })
   const todos = await db.select().from(schema.todo).where(eq(schema.todo.userId, user.id))
 
-  return c.json({ todos })
+  return c.json(todos)
 })
 
 // 新しいTodoを作成
-app.post('/', async (c) => {
+app.post('/', zValidator('json', createTodoSchema), async (c) => {
   const user = c.get('user')
   if (!user) {
     return c.json({ error: 'Unauthorized' }, 401)
   }
 
-  const { title, description } = await c.req.json()
-
-  if (!title) {
-    return c.json({ error: 'Title is required' }, 400)
-  }
+  const { title, description } = c.req.valid('json')
 
   const db = drizzle(c.env.DB, { schema })
   const id = crypto.randomUUID()
@@ -48,18 +46,18 @@ app.post('/', async (c) => {
 
   const [newTodo] = await db.select().from(schema.todo).where(eq(schema.todo.id, id))
 
-  return c.json({ todo: newTodo }, 201)
+  return c.json(newTodo, 201)
 })
 
 // Todoを更新
-app.put('/:id', async (c) => {
+app.put('/:id', zValidator('json', updateTodoSchema), async (c) => {
   const user = c.get('user')
   if (!user) {
     return c.json({ error: 'Unauthorized' }, 401)
   }
 
   const id = c.req.param('id')
-  const { title, description, completed } = await c.req.json()
+  const { title, description, completed } = c.req.valid('json')
 
   const db = drizzle(c.env.DB, { schema })
 
@@ -86,7 +84,7 @@ app.put('/:id', async (c) => {
 
   const [updatedTodo] = await db.select().from(schema.todo).where(eq(schema.todo.id, id))
 
-  return c.json({ todo: updatedTodo })
+  return c.json(updatedTodo)
 })
 
 // Todoを削除
