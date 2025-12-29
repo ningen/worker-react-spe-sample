@@ -2,10 +2,12 @@
 import { useForm } from '@conform-to/react'
 import { parseWithZod } from '@conform-to/zod'
 import { useState } from 'react'
+import { useNavigate, Link } from '@tanstack/react-router'
 import { signIn } from '../../shared/lib/auth-client'
 import { loginSchema } from '../../shared/schemas'
 
 export function LoginForm() {
+  const navigate = useNavigate()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -31,7 +33,7 @@ export function LoginForm() {
         if (result.error) {
           setError(result.error.message || 'ログインに失敗しました')
         } else {
-          window.location.href = '/todos'
+          navigate({ to: '/todos' })
         }
       } catch (err) {
         setError('ログインに失敗しました')
@@ -93,9 +95,9 @@ export function LoginForm() {
         </button>
       </form>
       <div className="mt-5 text-center">
-        <a href="/register" className="text-blue-600 hover:text-blue-800">
+        <Link to="/register" className="text-blue-600 hover:text-blue-800">
           アカウントを作成
-        </a>
+        </Link>
       </div>
     </div>
   )

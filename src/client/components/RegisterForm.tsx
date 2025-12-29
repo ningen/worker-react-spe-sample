@@ -2,10 +2,12 @@
 import { useForm } from '@conform-to/react'
 import { parseWithZod } from '@conform-to/zod'
 import { useState } from 'react'
+import { useNavigate, Link } from '@tanstack/react-router'
 import { signUp } from '../../shared/lib/auth-client'
 import { registerSchema } from '../../shared/schemas'
 
 export function RegisterForm() {
+  const navigate = useNavigate()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -32,7 +34,7 @@ export function RegisterForm() {
         if (result.error) {
           setError(result.error.message || '登録に失敗しました')
         } else {
-          window.location.href = '/todos'
+          navigate({ to: '/todos' })
         }
       } catch (err) {
         setError('登録に失敗しました')
@@ -128,9 +130,9 @@ export function RegisterForm() {
         </button>
       </form>
       <div className="mt-5 text-center">
-        <a href="/login" className="text-blue-600 hover:text-blue-800">
+        <Link to="/login" className="text-blue-600 hover:text-blue-800">
           すでにアカウントをお持ちの方
-        </a>
+        </Link>
       </div>
     </div>
   )

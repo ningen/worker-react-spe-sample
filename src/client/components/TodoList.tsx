@@ -3,6 +3,7 @@ import { useForm } from '@conform-to/react'
 import { parseWithZod } from '@conform-to/zod'
 import { useState, useEffect } from 'react'
 import type { InferResponseType } from 'hono/client'
+import { useNavigate } from '@tanstack/react-router'
 import { useSession, signOut } from '../../shared/lib/auth-client'
 import { createTodoSchema } from '../../shared/schemas'
 import { api } from '../../shared/lib/api-client'
@@ -17,6 +18,7 @@ type Todo = Omit<TodoFromAPI, 'createdAt' | 'updatedAt'> & {
 }
 
 export function TodoList() {
+  const navigate = useNavigate()
   const { data: session, isPending } = useSession()
   const [todos, setTodos] = useState<Todo[]>([])
   const [loading, setLoading] = useState(false)
@@ -61,9 +63,9 @@ export function TodoList() {
     if (session?.user) {
       fetchTodos()
     } else if (!isPending && !session) {
-      window.location.href = '/login'
+      navigate({ to: '/login' })
     }
-  }, [session, isPending])
+  }, [session, isPending, navigate])
 
   const fetchTodos = async () => {
     try {
@@ -116,7 +118,7 @@ export function TodoList() {
 
   const handleLogout = async () => {
     await signOut()
-    window.location.href = '/login'
+    navigate({ to: '/login' })
   }
 
   if (isPending) {
