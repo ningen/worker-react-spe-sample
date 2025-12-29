@@ -10,11 +10,5 @@
       "database_name": "todo-app-db",
       "database_id": "ef78476b-ceda-492b-a064-4eafcc32d95f"
     }
-  ],
-  "kv_namespaces": [
-    {
-      "binding": "KV",
-      "id": "todo-app-kv"
-    }
   ]
 }
