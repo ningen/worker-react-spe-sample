@@ -1,12 +1,15 @@
-import type { Auth } from './lib/auth'
+import type { Auth } from '../lib/auth'
 
 export type Bindings = CloudflareBindings
 
 export type Variables = {
   auth: Auth
-  user: {
+  user?: {
     id: string
     email: string
     name: string
-  } | null
+  }
 }
+
+// Re-export for convenience
+export type { Auth } from '../lib/auth'

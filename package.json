@@ -2,12 +2,12 @@
   "name": "worker-react-spe-sample",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "$npm_execpath run build && vite preview",
+    "dev": "vite --config config/vite.config.ts",
+    "build": "vite build --config config/vite.config.ts",
+    "preview": "$npm_execpath run build && vite preview --config config/vite.config.ts",
     "deploy": "$npm_execpath run build && wrangler deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
-    "db:generate": "drizzle-kit generate",
+    "db:generate": "drizzle-kit generate --config config/drizzle.config.ts",
     "db:migrate": "wrangler d1 migrations apply todo-app-db --local",
     "db:migrate:prod": "wrangler d1 migrations apply todo-app-db"
   },

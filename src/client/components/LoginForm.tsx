@@ -2,8 +2,8 @@
 import { useForm } from '@conform-to/react'
 import { parseWithZod } from '@conform-to/zod'
 import { useState } from 'react'
-import { signIn } from '../lib/auth-client'
-import { loginSchema } from '../lib/schemas'
+import { signIn } from '../../shared/lib/auth-client'
+import { loginSchema } from '../../shared/schemas'
 
 export function LoginForm() {
   const [error, setError] = useState('')

@@ -2,8 +2,8 @@
 import { useForm } from '@conform-to/react'
 import { parseWithZod } from '@conform-to/zod'
 import { useState } from 'react'
-import { signUp } from '../lib/auth-client'
-import { registerSchema } from '../lib/schemas'
+import { signUp } from '../../shared/lib/auth-client'
+import { registerSchema } from '../../shared/schemas'
 
 export function RegisterForm() {
   const [error, setError] = useState('')

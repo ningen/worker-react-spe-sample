@@ -3,9 +3,9 @@ import { zValidator } from '@hono/zod-validator'
 import { drizzle } from 'drizzle-orm/d1'
 import { eq, and } from 'drizzle-orm'
 import { ResultAsync } from 'neverthrow'
-import * as schema from '../db/schema'
-import type { Bindings, Variables } from '../types'
-import { createTodoSchema, updateTodoSchema } from '../lib/schemas'
+import * as schema from '../../shared/db/schema'
+import type { Bindings, Variables } from '../../shared/types'
+import { createTodoSchema, updateTodoSchema } from '../../shared/schemas'
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 

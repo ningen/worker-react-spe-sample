@@ -3,9 +3,9 @@ import { useForm } from '@conform-to/react'
 import { parseWithZod } from '@conform-to/zod'
 import { useState, useEffect } from 'react'
 import type { InferResponseType } from 'hono/client'
-import { useSession, signOut } from '../lib/auth-client'
-import { createTodoSchema } from '../lib/schemas'
-import { api } from '../lib/api-client'
+import { useSession, signOut } from '../../shared/lib/auth-client'
+import { createTodoSchema } from '../../shared/schemas'
+import { api } from '../../shared/lib/api-client'
 
 // Hono RPCからAPIレスポンスの型を推論
 type TodoFromAPI = InferResponseType<typeof api.$get, 200>[number]

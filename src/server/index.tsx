@@ -1,8 +1,8 @@
 /** @jsxImportSource hono/jsx */
 import { Hono } from 'hono'
 import { renderer } from './renderer'
-import { createAuth } from './lib/auth'
-import type { Bindings, Variables } from './types'
+import { createAuth } from '../shared/lib/auth'
+import type { Bindings, Variables } from '../shared/types'
 import todosRoute from './routes/todos'
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()

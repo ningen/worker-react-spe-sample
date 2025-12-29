@@ -10,11 +10,11 @@ export const renderer = jsxRenderer(() => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>TodoList App</title>
         <ViteClient />
-        <Link href="/src/style.css" rel="stylesheet" />
+        <Link href="/src/client/style.css" rel="stylesheet" />
       </head>
       <body>
         <div id="root"></div>
-        <Script type="module" src="/src/client.tsx" />
+        <Script type="module" src="/src/client/entry.tsx" />
       </body>
     </html>
   )
