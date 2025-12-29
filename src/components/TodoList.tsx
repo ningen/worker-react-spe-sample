@@ -1,24 +1,57 @@
 /** @jsxImportSource react */
+import { useForm } from '@conform-to/react'
+import { parseWithZod } from '@conform-to/zod'
 import { useState, useEffect } from 'react'
 import { useSession, signOut } from '../lib/auth-client'
+import { createTodoSchema, type Todo as TodoType } from '../lib/schemas'
 
-type Todo = {
-  id: string
-  title: string
-  description: string | null
-  completed: boolean
-  userId: string
-  createdAt: string
-  updatedAt: string
+type Todo = TodoType & {
+  createdAt: Date
+  updatedAt: Date
 }
 
 export function TodoList() {
   const { data: session, isPending } = useSession()
   const [todos, setTodos] = useState<Todo[]>([])
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const [form, fields] = useForm({
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: createTodoSchema })
+    },
+    async onSubmit(event, { formData }) {
+      event.preventDefault()
+      setError('')
+      setLoading(true)
+
+      const submission = parseWithZod(formData, { schema: createTodoSchema })
+
+      if (submission.status !== 'success') {
+        setLoading(false)
+        return
+      }
+
+      try {
+        const response = await fetch('/api/todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submission.value),
+        })
+
+        if (response.ok) {
+          form.reset()
+          await fetchTodos()
+        } else {
+          setError('Todoの追加に失敗しました')
+        }
+      } catch (err) {
+        setError('Todoの追加に失敗しました')
+      } finally {
+        setLoading(false)
+      }
+    },
+  })
 
   useEffect(() => {
     if (session?.user) {
@@ -33,36 +66,16 @@ export function TodoList() {
       const response = await fetch('/api/todos')
       if (response.ok) {
         const data = await response.json()
-        setTodos(data.todos || [])
+        setTodos(
+          data.map((todo: any) => ({
+            ...todo,
+            createdAt: new Date(todo.createdAt),
+            updatedAt: new Date(todo.updatedAt),
+          }))
+        )
       }
     } catch (err) {
       setError('Todoの取得に失敗しました')
-    }
-  }
-
-  const handleAddTodo = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
-    try {
-      const response = await fetch('/api/todos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, description }),
-      })
-
-      if (response.ok) {
-        setTitle('')
-        setDescription('')
-        await fetchTodos()
-      } else {
-        setError('Todoの追加に失敗しました')
-      }
-    } catch (err) {
-      setError('Todoの追加に失敗しました')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -133,32 +146,40 @@ export function TodoList() {
         </div>
       </div>
 
-      <form onSubmit={handleAddTodo} style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
+      <form id={form.id} onSubmit={form.onSubmit} style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
         <h3>新しいTodoを追加</h3>
         <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="title" style={{ display: 'block', marginBottom: '5px' }}>
+          <label htmlFor={fields.title.id} style={{ display: 'block', marginBottom: '5px' }}>
             タイトル
           </label>
           <input
-            id="title"
+            id={fields.title.id}
+            name={fields.title.name}
             type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
             required
             style={{ width: '100%', padding: '8px', fontSize: '14px' }}
           />
+          {fields.title.errors && (
+            <div style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
+              {fields.title.errors}
+            </div>
+          )}
         </div>
         <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="description" style={{ display: 'block', marginBottom: '5px' }}>
+          <label htmlFor={fields.description.id} style={{ display: 'block', marginBottom: '5px' }}>
             説明（任意）
           </label>
           <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            id={fields.description.id}
+            name={fields.description.name}
             rows={3}
             style={{ width: '100%', padding: '8px', fontSize: '14px' }}
           />
+          {fields.description.errors && (
+            <div style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
+              {fields.description.errors}
+            </div>
+          )}
         </div>
         <button
           type="submit"
