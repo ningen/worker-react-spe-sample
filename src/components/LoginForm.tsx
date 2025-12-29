@@ -1,65 +1,83 @@
 /** @jsxImportSource react */
+import { useForm } from '@conform-to/react'
+import { parseWithZod } from '@conform-to/zod'
 import { useState } from 'react'
 import { signIn } from '../lib/auth-client'
+import { loginSchema } from '../lib/schemas'
 
 export function LoginForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+  const [form, fields] = useForm({
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: loginSchema })
+    },
+    async onSubmit(event, { formData }) {
+      event.preventDefault()
+      setError('')
+      setLoading(true)
 
-    try {
-      const result = await signIn.email({
-        email,
-        password,
-      })
+      const submission = parseWithZod(formData, { schema: loginSchema })
 
-      if (result.error) {
-        setError(result.error.message || 'ログインに失敗しました')
-      } else {
-        window.location.href = '/todos'
+      if (submission.status !== 'success') {
+        setLoading(false)
+        return
       }
-    } catch (err) {
-      setError('ログインに失敗しました')
-    } finally {
-      setLoading(false)
-    }
-  }
+
+      try {
+        const result = await signIn.email(submission.value)
+
+        if (result.error) {
+          setError(result.error.message || 'ログインに失敗しました')
+        } else {
+          window.location.href = '/todos'
+        }
+      } catch (err) {
+        setError('ログインに失敗しました')
+      } finally {
+        setLoading(false)
+      }
+    },
+  })
 
   return (
     <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px' }}>
       <h2>ログイン</h2>
-      <form onSubmit={handleSubmit}>
+      <form id={form.id} onSubmit={form.onSubmit}>
         <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>
+          <label htmlFor={fields.email.id} style={{ display: 'block', marginBottom: '5px' }}>
             メールアドレス
           </label>
           <input
-            id="email"
+            id={fields.email.id}
+            name={fields.email.name}
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             required
             style={{ width: '100%', padding: '8px', fontSize: '14px' }}
           />
+          {fields.email.errors && (
+            <div style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
+              {fields.email.errors}
+            </div>
+          )}
         </div>
         <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>
+          <label htmlFor={fields.password.id} style={{ display: 'block', marginBottom: '5px' }}>
             パスワード
           </label>
           <input
-            id="password"
+            id={fields.password.id}
+            name={fields.password.name}
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             required
             style={{ width: '100%', padding: '8px', fontSize: '14px' }}
           />
+          {fields.password.errors && (
+            <div style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
+              {fields.password.errors}
+            </div>
+          )}
         </div>
         {error && (
           <div style={{ color: 'red', marginBottom: '15px', fontSize: '14px' }}>

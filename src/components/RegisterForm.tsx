@@ -1,105 +1,118 @@
 /** @jsxImportSource react */
+import { useForm } from '@conform-to/react'
+import { parseWithZod } from '@conform-to/zod'
 import { useState } from 'react'
 import { signUp } from '../lib/auth-client'
+import { registerSchema } from '../lib/schemas'
 
 export function RegisterForm() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
+  const [form, fields] = useForm({
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: registerSchema })
+    },
+    async onSubmit(event, { formData }) {
+      event.preventDefault()
+      setError('')
+      setLoading(true)
 
-    if (password !== confirmPassword) {
-      setError('パスワードが一致しません')
-      return
-    }
+      const submission = parseWithZod(formData, { schema: registerSchema })
 
-    if (password.length < 8) {
-      setError('パスワードは8文字以上である必要があります')
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      const result = await signUp.email({
-        email,
-        password,
-        name,
-      })
-
-      if (result.error) {
-        setError(result.error.message || '登録に失敗しました')
-      } else {
-        window.location.href = '/todos'
+      if (submission.status !== 'success') {
+        setLoading(false)
+        return
       }
-    } catch (err) {
-      setError('登録に失敗しました')
-    } finally {
-      setLoading(false)
-    }
-  }
+
+      try {
+        const { confirmPassword, ...data } = submission.value
+        const result = await signUp.email(data)
+
+        if (result.error) {
+          setError(result.error.message || '登録に失敗しました')
+        } else {
+          window.location.href = '/todos'
+        }
+      } catch (err) {
+        setError('登録に失敗しました')
+      } finally {
+        setLoading(false)
+      }
+    },
+  })
 
   return (
     <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px' }}>
       <h2>アカウント作成</h2>
-      <form onSubmit={handleSubmit}>
+      <form id={form.id} onSubmit={form.onSubmit}>
         <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="name" style={{ display: 'block', marginBottom: '5px' }}>
+          <label htmlFor={fields.name.id} style={{ display: 'block', marginBottom: '5px' }}>
             名前
           </label>
           <input
-            id="name"
+            id={fields.name.id}
+            name={fields.name.name}
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
             required
             style={{ width: '100%', padding: '8px', fontSize: '14px' }}
           />
+          {fields.name.errors && (
+            <div style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
+              {fields.name.errors}
+            </div>
+          )}
         </div>
         <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>
+          <label htmlFor={fields.email.id} style={{ display: 'block', marginBottom: '5px' }}>
             メールアドレス
           </label>
           <input
-            id="email"
+            id={fields.email.id}
+            name={fields.email.name}
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             required
             style={{ width: '100%', padding: '8px', fontSize: '14px' }}
           />
+          {fields.email.errors && (
+            <div style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
+              {fields.email.errors}
+            </div>
+          )}
         </div>
         <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>
+          <label htmlFor={fields.password.id} style={{ display: 'block', marginBottom: '5px' }}>
             パスワード
           </label>
           <input
-            id="password"
+            id={fields.password.id}
+            name={fields.password.name}
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             required
             style={{ width: '100%', padding: '8px', fontSize: '14px' }}
           />
+          {fields.password.errors && (
+            <div style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
+              {fields.password.errors}
+            </div>
+          )}
         </div>
         <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="confirmPassword" style={{ display: 'block', marginBottom: '5px' }}>
+          <label htmlFor={fields.confirmPassword.id} style={{ display: 'block', marginBottom: '5px' }}>
             パスワード（確認）
           </label>
           <input
-            id="confirmPassword"
+            id={fields.confirmPassword.id}
+            name={fields.confirmPassword.name}
             type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
             required
             style={{ width: '100%', padding: '8px', fontSize: '14px' }}
           />
+          {fields.confirmPassword.errors && (
+            <div style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
+              {fields.confirmPassword.errors}
+            </div>
+          )}
         </div>
         {error && (
           <div style={{ color: 'red', marginBottom: '15px', fontSize: '14px' }}>
