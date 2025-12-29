@@ -46,4 +46,5 @@ app.get('/login', (c) => c.render(<></>))
 app.get('/register', (c) => c.render(<></>))
 app.get('/todos', (c) => c.render(<></>))
 
+export type AppType = typeof app
 export default app

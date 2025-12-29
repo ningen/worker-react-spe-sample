@@ -2,10 +2,16 @@
 import { useForm } from '@conform-to/react'
 import { parseWithZod } from '@conform-to/zod'
 import { useState, useEffect } from 'react'
+import type { InferResponseType } from 'hono/client'
 import { useSession, signOut } from '../lib/auth-client'
-import { createTodoSchema, type Todo as TodoType } from '../lib/schemas'
+import { createTodoSchema } from '../lib/schemas'
+import { api } from '../lib/api-client'
 
-type Todo = TodoType & {
+// Hono RPCからAPIレスポンスの型を推論
+type TodoFromAPI = InferResponseType<typeof api.$get, 200>[number]
+
+// Date型に変換したTodo型
+type Todo = Omit<TodoFromAPI, 'createdAt' | 'updatedAt'> & {
   createdAt: Date
   updatedAt: Date
 }
@@ -33,10 +39,8 @@ export function TodoList() {
       }
 
       try {
-        const response = await fetch('/api/todos', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(submission.value),
+        const response = await api.$post({
+          json: submission.value,
         })
 
         if (response.ok) {
@@ -63,11 +67,11 @@ export function TodoList() {
 
   const fetchTodos = async () => {
     try {
-      const response = await fetch('/api/todos')
+      const response = await api.$get()
       if (response.ok) {
         const data = await response.json()
         setTodos(
-          data.map((todo: any) => ({
+          data.map((todo) => ({
             ...todo,
             createdAt: new Date(todo.createdAt),
             updatedAt: new Date(todo.updatedAt),
@@ -81,10 +85,9 @@ export function TodoList() {
 
   const handleToggleComplete = async (todo: Todo) => {
     try {
-      const response = await fetch(`/api/todos/${todo.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ completed: !todo.completed }),
+      const response = await api[':id'].$put({
+        param: { id: todo.id },
+        json: { completed: !todo.completed },
       })
 
       if (response.ok) {
@@ -99,8 +102,8 @@ export function TodoList() {
     if (!confirm('このTodoを削除しますか？')) return
 
     try {
-      const response = await fetch(`/api/todos/${id}`, {
-        method: 'DELETE',
+      const response = await api[':id'].$delete({
+        param: { id },
       })
 
       if (response.ok) {

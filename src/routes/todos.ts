@@ -11,10 +11,7 @@ const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 
 // 全てのTodoを取得
 app.get('/', async (c) => {
-  const user = c.get('user')
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
+  const user = c.get('user')!  // ミドルウェアで認証済み
 
   const db = drizzle(c.env.DB, { schema })
 
@@ -33,11 +30,7 @@ app.get('/', async (c) => {
 
 // 新しいTodoを作成
 app.post('/', zValidator('json', createTodoSchema), async (c) => {
-  const user = c.get('user')
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
-
+  const user = c.get('user')!  // ミドルウェアで認証済み
   const { title, description } = c.req.valid('json')
 
   const db = drizzle(c.env.DB, { schema })
@@ -83,11 +76,7 @@ app.post('/', zValidator('json', createTodoSchema), async (c) => {
 
 // Todoを更新
 app.put('/:id', zValidator('json', updateTodoSchema), async (c) => {
-  const user = c.get('user')
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
-
+  const user = c.get('user')!  // ミドルウェアで認証済み
   const id = c.req.param('id')
   const { title, description, completed } = c.req.valid('json')
 
@@ -152,11 +141,7 @@ app.put('/:id', zValidator('json', updateTodoSchema), async (c) => {
 
 // Todoを削除
 app.delete('/:id', async (c) => {
-  const user = c.get('user')
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
-
+  const user = c.get('user')!  // ミドルウェアで認証済み
   const id = c.req.param('id')
   const db = drizzle(c.env.DB, { schema })
 
@@ -192,4 +177,5 @@ app.delete('/:id', async (c) => {
   return c.json({ success: true })
 })
 
+export type TodosAppType = typeof app
 export default app
