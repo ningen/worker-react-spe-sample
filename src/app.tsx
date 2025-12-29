@@ -19,35 +19,19 @@ export function App() {
   }
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '100px' }}>
-      <h1>TodoListアプリケーション</h1>
-      <p>better-auth + Drizzle ORM + Cloudflare Workers</p>
-      <div style={{ marginTop: '30px' }}>
+    <div className="text-center mt-24">
+      <h1 className="text-3xl font-bold mb-4">TodoListアプリケーション</h1>
+      <p className="text-gray-600 mb-8">better-auth + Drizzle ORM + Cloudflare Workers</p>
+      <div className="space-x-4">
         <a
           href="/login"
-          style={{
-            padding: '10px 20px',
-            margin: '0 10px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '4px',
-            display: 'inline-block',
-          }}
+          className="inline-block px-5 py-2.5 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
         >
           ログイン
         </a>
         <a
           href="/register"
-          style={{
-            padding: '10px 20px',
-            margin: '0 10px',
-            backgroundColor: '#28a745',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '4px',
-            display: 'inline-block',
-          }}
+          className="inline-block px-5 py-2.5 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
         >
           アカウント作成
         </a>

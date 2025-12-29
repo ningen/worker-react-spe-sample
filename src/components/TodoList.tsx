@@ -117,7 +117,7 @@ export function TodoList() {
   }
 
   if (isPending) {
-    return <div style={{ textAlign: 'center', marginTop: '50px' }}>読み込み中...</div>
+    return <div className="text-center mt-12 text-gray-600">読み込み中...</div>
   }
 
   if (!session) {
@@ -125,31 +125,24 @@ export function TodoList() {
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '50px auto', padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h1>Todoリスト</h1>
-        <div>
-          <span style={{ marginRight: '15px' }}>こんにちは、{session.user.name}さん</span>
+    <div className="max-w-4xl mx-auto mt-12 px-6">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Todoリスト</h1>
+        <div className="flex items-center gap-4">
+          <span className="text-gray-700">こんにちは、{session.user.name}さん</span>
           <button
             onClick={handleLogout}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#dc3545',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
           >
             ログアウト
           </button>
         </div>
       </div>
 
-      <form id={form.id} onSubmit={form.onSubmit} style={{ marginBottom: '30px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-        <h3>新しいTodoを追加</h3>
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor={fields.title.id} style={{ display: 'block', marginBottom: '5px' }}>
+      <form id={form.id} onSubmit={form.onSubmit} className="mb-8 p-6 bg-gray-50 rounded-lg">
+        <h3 className="text-xl font-semibold mb-4">新しいTodoを追加</h3>
+        <div className="mb-4">
+          <label htmlFor={fields.title.id} className="block mb-2 text-sm font-medium text-gray-700">
             タイトル
           </label>
           <input
@@ -157,26 +150,26 @@ export function TodoList() {
             name={fields.title.name}
             type="text"
             required
-            style={{ width: '100%', padding: '8px', fontSize: '14px' }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {fields.title.errors && (
-            <div style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
+            <div className="text-red-600 text-xs mt-1">
               {fields.title.errors}
             </div>
           )}
         </div>
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor={fields.description.id} style={{ display: 'block', marginBottom: '5px' }}>
+        <div className="mb-4">
+          <label htmlFor={fields.description.id} className="block mb-2 text-sm font-medium text-gray-700">
             説明（任意）
           </label>
           <textarea
             id={fields.description.id}
             name={fields.description.name}
             rows={3}
-            style={{ width: '100%', padding: '8px', fontSize: '14px' }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {fields.description.errors && (
-            <div style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
+            <div className="text-red-600 text-xs mt-1">
               {fields.description.errors}
             </div>
           )}
@@ -184,85 +177,54 @@ export function TodoList() {
         <button
           type="submit"
           disabled={loading}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-          }}
+          className="px-5 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
         >
           {loading ? '追加中...' : '追加'}
         </button>
       </form>
 
       {error && (
-        <div style={{ color: 'red', marginBottom: '15px', fontSize: '14px' }}>
+        <div className="text-red-600 text-sm mb-4">
           {error}
         </div>
       )}
 
       <div>
-        <h3>あなたのTodo（{todos.length}件）</h3>
+        <h3 className="text-xl font-semibold mb-4">あなたのTodo（{todos.length}件）</h3>
         {todos.length === 0 ? (
-          <p style={{ color: '#6c757d' }}>Todoがありません</p>
+          <p className="text-gray-500">Todoがありません</p>
         ) : (
-          <ul style={{ listStyle: 'none', padding: 0 }}>
+          <ul className="space-y-3">
             {todos.map((todo) => (
               <li
                 key={todo.id}
-                style={{
-                  padding: '15px',
-                  marginBottom: '10px',
-                  backgroundColor: 'white',
-                  border: '1px solid #dee2e6',
-                  borderRadius: '4px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
+                className="p-4 bg-white border border-gray-200 rounded-lg flex justify-between items-center shadow-sm hover:shadow-md transition-shadow"
               >
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div className="flex-1">
+                  <div className="flex items-center">
                     <input
                       type="checkbox"
                       checked={todo.completed}
                       onChange={() => handleToggleComplete(todo)}
-                      style={{ marginRight: '10px' }}
+                      className="mr-3 w-4 h-4 cursor-pointer"
                     />
                     <h4
-                      style={{
-                        margin: 0,
-                        textDecoration: todo.completed ? 'line-through' : 'none',
-                        color: todo.completed ? '#6c757d' : 'inherit',
-                      }}
+                      className={`text-lg font-medium ${
+                        todo.completed ? 'line-through text-gray-500' : 'text-gray-900'
+                      }`}
                     >
                       {todo.title}
                     </h4>
                   </div>
                   {todo.description && (
-                    <p
-                      style={{
-                        margin: '5px 0 0 30px',
-                        color: '#6c757d',
-                        fontSize: '14px',
-                      }}
-                    >
+                    <p className="ml-7 mt-1 text-sm text-gray-600">
                       {todo.description}
                     </p>
                   )}
                 </div>
                 <button
                   onClick={() => handleDeleteTodo(todo.id)}
-                  style={{
-                    padding: '6px 12px',
-                    backgroundColor: '#dc3545',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                  }}
+                  className="px-3 py-1.5 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition-colors"
                 >
                   削除
                 </button>

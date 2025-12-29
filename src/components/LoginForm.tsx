@@ -42,11 +42,11 @@ export function LoginForm() {
   })
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px' }}>
-      <h2>ログイン</h2>
+    <div className="max-w-md mx-auto mt-12 p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6">ログイン</h2>
       <form id={form.id} onSubmit={form.onSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor={fields.email.id} style={{ display: 'block', marginBottom: '5px' }}>
+        <div className="mb-4">
+          <label htmlFor={fields.email.id} className="block mb-2 text-sm font-medium text-gray-700">
             メールアドレス
           </label>
           <input
@@ -54,16 +54,16 @@ export function LoginForm() {
             name={fields.email.name}
             type="email"
             required
-            style={{ width: '100%', padding: '8px', fontSize: '14px' }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {fields.email.errors && (
-            <div style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
+            <div className="text-red-600 text-xs mt-1">
               {fields.email.errors}
             </div>
           )}
         </div>
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor={fields.password.id} style={{ display: 'block', marginBottom: '5px' }}>
+        <div className="mb-4">
+          <label htmlFor={fields.password.id} className="block mb-2 text-sm font-medium text-gray-700">
             パスワード
           </label>
           <input
@@ -71,37 +71,29 @@ export function LoginForm() {
             name={fields.password.name}
             type="password"
             required
-            style={{ width: '100%', padding: '8px', fontSize: '14px' }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {fields.password.errors && (
-            <div style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
+            <div className="text-red-600 text-xs mt-1">
               {fields.password.errors}
             </div>
           )}
         </div>
         {error && (
-          <div style={{ color: 'red', marginBottom: '15px', fontSize: '14px' }}>
+          <div className="text-red-600 text-sm mb-4">
             {error}
           </div>
         )}
         <button
           type="submit"
           disabled={loading}
-          style={{
-            width: '100%',
-            padding: '10px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-          }}
+          className="w-full py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
         >
           {loading ? 'ログイン中...' : 'ログイン'}
         </button>
       </form>
-      <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        <a href="/register" style={{ color: '#007bff' }}>
+      <div className="mt-5 text-center">
+        <a href="/register" className="text-blue-600 hover:text-blue-800">
           アカウントを作成
         </a>
       </div>
